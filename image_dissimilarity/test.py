@@ -5,7 +5,7 @@ import torch
 from PIL import Image
 import numpy as np
 import os
-import opencv as cv2
+import cv2
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from tqdm import tqdm
