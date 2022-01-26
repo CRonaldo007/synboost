@@ -5,6 +5,7 @@ import torch
 from PIL import Image
 import numpy as np
 import os
+import opencv as cv2
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -120,6 +121,20 @@ with torch.no_grad():
             soft_pred = outputs[:, 1, :, :] * 0.75 + entropy * 0.25
         else:
             soft_pred = outputs[:, 1, :, :]
+           
+
+        original_tensor = original * 1
+        img_og = Image.fromarray(
+            original_tensor.squeeze().cpu().numpy().astype(np.uint8))
+        diss_pred = soft_pred
+        diss_pred = (diss_pred * 255).astype(np.uint8).squeeze()
+
+        heatmap_prediction = cv2.applyColorMap((255-diss_pred), cv2.COLORMAP_JET)
+        heatmap_pred_im = Image.fromarray(heatmap_prediction).resize((2048, 1024))
+        combined_image = Image.blend(img_og, heatmap_pred_im, alpha=.5)
+
+        
+        
         flat_pred[i * w * h:i * w * h +
                   w * h] = torch.flatten(soft_pred).detach().cpu().numpy()
         flat_labels[i * w * h:i * w * h +
@@ -138,7 +153,9 @@ with torch.no_grad():
         predicted_img.save(os.path.join(store_fdr_exp, 'pred', file_name))
         soft_img.save(os.path.join(store_fdr_exp, 'soft', file_name))
         label_img.save(os.path.join(store_fdr_exp, 'label', file_name))
-
+        combined_image.save(os.path.join(store_fdr_exp, 'blended', file_name))
+       
+        
 print('Calculating metric scores')
 if config['test_dataloader']['dataset_args']['roi']:
     invalid_indices = np.argwhere(flat_labels == 255)
