@@ -100,8 +100,14 @@ flat_pred = np.zeros(w * h * len(test_loader), dtype='float32')
 flat_labels = np.zeros(w * h * len(test_loader), dtype='float32')
 num_points = 50
 
+dataroot = '/kaggle/input/cityscapes-synboost/final_dataset/fs_static'
+original_paths = [os.path.join(dataroot, 'original', image)
+                               for image in os.listdir(os.path.join(dataroot, 'original'))]
+
 with torch.no_grad():
     for i, data_i in enumerate(tqdm(test_loader)):
+        image_path = original_paths[i]
+        img_og = Image.open(image_path).convert('RGB').resize((2048,1024))
         original = data_i['original'].cuda()
         semantic = data_i['semantic'].cuda()
         synthesis = data_i['synthesis'].cuda()
@@ -122,10 +128,6 @@ with torch.no_grad():
         else:
             soft_pred = outputs[:, 1, :, :]
            
-
-        original_tensor = original * 1
-        img_og = Image.fromarray(
-            original_tensor.squeeze().cpu().numpy().astype(np.uint8))
         diss_pred = soft_pred
         diss_pred = (diss_pred * 255).astype(np.uint8).squeeze()
 
