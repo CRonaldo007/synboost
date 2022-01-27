@@ -16,6 +16,7 @@ from util.load import load_ckp
 from util import wandb_utils
 from util.load import load_ckp
 from scipy.special import softmax as sft
+from natsort import natsorted
 
 from util import trainer_util, metrics
 from util.iter_counter import IterationCounter
@@ -109,6 +110,7 @@ num_points = 50
 dataroot = '/kaggle/input/cityscapes-synboost/final_dataset/fs_lost_and_found'
 original_paths = [os.path.join(dataroot, 'original', image)
                                for image in os.listdir(os.path.join(dataroot, 'original'))]
+original_paths = natsorted(original_paths)
 
 with torch.no_grad():
     for i, data_i in enumerate(tqdm(test_loader)):
