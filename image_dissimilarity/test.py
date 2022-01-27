@@ -33,6 +33,9 @@ parser.add_argument('--wandb_project', type=str, default="MLRC_Synboost", help='
 parser.add_argument('--wandb', type=bool, default=True, help='Log to wandb')
 parser.add_argument('--epoch', type=int, default=12, help='best epoch number in wandb')
 
+def to_numpy(tensor):
+        return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
+    
 opts = parser.parse_args()
 cudnn.benchmark = True
 
@@ -120,7 +123,8 @@ with torch.no_grad():
             distance = data_i['distance'].cuda()
             outputs = diss_model(original, synthesis, semantic, entropy, mae,
                            distance)
-            diss_pred = sft(outputs[0], axis=1)
+            out = to_numpy(outputs)
+            diss_pred = sft(out[0], axis=1)
             outputs = softmax(outputs)
             
         else:
