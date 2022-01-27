@@ -117,9 +117,11 @@ with torch.no_grad():
             entropy = data_i['entropy'].cuda()
             mae = data_i['mae'].cuda()
             distance = data_i['distance'].cuda()
-            outputs = softmax(
-                diss_model(original, synthesis, semantic, entropy, mae,
-                           distance))
+            outputs = diss_model(original, synthesis, semantic, entropy, mae,
+                           distance)
+            diss_pred = softmax(outputs[0], axis=1)
+            outputs = softmax(outputs)
+            
         else:
             outputs = softmax(diss_model(original, synthesis, semantic))
         (softmax_pred, predictions) = torch.max(outputs, dim=1)
@@ -128,7 +130,6 @@ with torch.no_grad():
         else:
             soft_pred = outputs[:, 1, :, :]
            
-        diss_pred = soft_pred
         diss_pred = (diss_pred * 255).astype(np.uint8).squeeze()
 
         heatmap_prediction = cv2.applyColorMap((255-diss_pred), cv2.COLORMAP_JET)
