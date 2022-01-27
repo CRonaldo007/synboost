@@ -106,7 +106,7 @@ flat_pred = np.zeros(w * h * len(test_loader), dtype='float32')
 flat_labels = np.zeros(w * h * len(test_loader), dtype='float32')
 num_points = 50
 
-dataroot = '/kaggle/input/cityscapes-synboost/final_dataset/fs_static'
+dataroot = '/kaggle/input/cityscapes-synboost/final_dataset/fs_lost_and_found'
 original_paths = [os.path.join(dataroot, 'original', image)
                                for image in os.listdir(os.path.join(dataroot, 'original'))]
 
