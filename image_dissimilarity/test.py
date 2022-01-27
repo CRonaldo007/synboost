@@ -188,7 +188,7 @@ results = metrics.get_metrics(flat_labels, flat_pred)
 print("roc_auc_score : " + str(results['auroc']))
 print("mAP: " + str(results['AP']))
 print("FPR@95%TPR : " + str(results['FPR@95%TPR']))
-print("Inference Time: "  + str(inf_time/(10*len(original_paths))))
+print("Inference Time: "  + str(inf_time/(10.000*len(original_paths))))
 
 if config['visualize']:
     plt.figure()
