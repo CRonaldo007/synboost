@@ -15,6 +15,7 @@ from numpy.linalg import norm
 from util.load import load_ckp
 from util import wandb_utils
 from util.load import load_ckp
+from scipy.special import softmax as sft
 
 from util import trainer_util, metrics
 from util.iter_counter import IterationCounter
@@ -119,7 +120,7 @@ with torch.no_grad():
             distance = data_i['distance'].cuda()
             outputs = diss_model(original, synthesis, semantic, entropy, mae,
                            distance)
-            diss_pred = softmax(outputs[0], axis=1)
+            diss_pred = sft(outputs[0], axis=1)
             outputs = softmax(outputs)
             
         else:
