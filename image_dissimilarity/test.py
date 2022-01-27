@@ -135,7 +135,7 @@ with torch.no_grad():
         else:
             soft_pred = outputs[:, 1, :, :]
            
-        diss_pred = (diss_pred * 255).astype(np.uint8).squeeze()
+        diss_pred = (soft_pred.squeeze().cpu().numpy() * 255).astype(np.uint8)
 
         heatmap_prediction = cv2.applyColorMap((255-diss_pred), cv2.COLORMAP_JET)
         heatmap_pred_im = Image.fromarray(heatmap_prediction).resize((2048, 1024))
