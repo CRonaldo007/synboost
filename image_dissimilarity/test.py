@@ -64,6 +64,7 @@ if not os.path.isdir(os.path.join(store_fdr_exp, 'pred')):
     os.makedirs(os.path.join(store_fdr_exp, 'label'), exist_ok=True)
     os.makedirs(os.path.join(store_fdr_exp, 'pred'), exist_ok=True)
     os.makedirs(os.path.join(store_fdr_exp, 'soft'), exist_ok=True)
+    os.makedirs(os.path.join(store_fdr_exp, 'blended'), exist_ok=True)
 
 # Activate GPUs
 config['gpu_ids'] = opts.gpu_ids
