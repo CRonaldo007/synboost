@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 import os
 import cv2
+import time
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -112,60 +113,68 @@ original_paths = [os.path.join(dataroot, 'original', image)
                                for image in os.listdir(os.path.join(dataroot, 'original'))]
 original_paths = natsorted(original_paths)
 
+inf_time = 0
 with torch.no_grad():
-    for i, data_i in enumerate(tqdm(test_loader)):
-        image_path = original_paths[i]
-        img_og = Image.open(image_path).convert('RGB').resize((2048,1024))
-        original = data_i['original'].cuda()
-        semantic = data_i['semantic'].cuda()
-        synthesis = data_i['synthesis'].cuda()
-        label = data_i['label'].cuda()
+    for j in range(10):
+            for i, data_i in enumerate(tqdm(test_loader)):
+                image_path = original_paths[i]
+                img_og = Image.open(image_path).convert('RGB').resize((2048,1024))
+                original = data_i['original'].cuda()
+                semantic = data_i['semantic'].cuda()
+                synthesis = data_i['synthesis'].cuda()
+                label = data_i['label'].cuda()
 
-        if prior:
-            entropy = data_i['entropy'].cuda()
-            mae = data_i['mae'].cuda()
-            distance = data_i['distance'].cuda()
-            outputs = diss_model(original, synthesis, semantic, entropy, mae,
-                           distance)
-            out = to_numpy(outputs)
-            diss_pred = sft(out[0], axis=1)
-            outputs = softmax(outputs)
-            
-        else:
-            outputs = softmax(diss_model(original, synthesis, semantic))
-        (softmax_pred, predictions) = torch.max(outputs, dim=1)
-        if ensemble:
-            soft_pred = outputs[:, 1, :, :] * 0.75 + entropy * 0.25
-        else:
-            soft_pred = outputs[:, 1, :, :]
-           
-        diss_pred = (soft_pred.squeeze().cpu().numpy() * 255).astype(np.uint8)
+                if prior:
+                    entropy = data_i['entropy'].cuda()
+                    mae = data_i['mae'].cuda()
+                    distance = data_i['distance'].cuda()
+                    start = time.time()
+                    outputs = diss_model(original, synthesis, semantic, entropy, mae,
+                                   distance)
+                    torch.cuda.current_stream().synchronize()
+                    end = time.time()
+                    inf_time += (end - start)
+                    out = to_numpy(outputs)
+                    diss_pred = sft(out[0], axis=1)
+                    outputs = softmax(outputs)
 
-        heatmap_prediction = cv2.applyColorMap((255-diss_pred), cv2.COLORMAP_JET)
-        heatmap_pred_im = Image.fromarray(heatmap_prediction).resize((2048, 1024))
-        combined_image = Image.blend(img_og, heatmap_pred_im, alpha=.5)
+                else:
+                    outputs = softmax(diss_model(original, synthesis, semantic))
+                (softmax_pred, predictions) = torch.max(outputs, dim=1)
+                if ensemble:
+                    soft_pred = outputs[:, 1, :, :] * 0.75 + entropy * 0.25
+                else:
+                    soft_pred = outputs[:, 1, :, :]
 
-        
-        
-        flat_pred[i * w * h:i * w * h +
-                  w * h] = torch.flatten(soft_pred).detach().cpu().numpy()
-        flat_labels[i * w * h:i * w * h +
-                    w * h] = torch.flatten(label).detach().cpu().numpy()
-        # Save results
-        predicted_tensor = predictions * 1
-        label_tensor = label * 1
+                diss_pred = (soft_pred.squeeze().cpu().numpy() * 255).astype(np.uint8)
 
-        file_name = os.path.basename(data_i['original_path'][0])
-        label_img = Image.fromarray(
-            label_tensor.squeeze().cpu().numpy().astype(np.uint8))
-        soft_img = Image.fromarray(
-            (soft_pred.squeeze().cpu().numpy() * 255).astype(np.uint8))
-        predicted_img = Image.fromarray(
-            predicted_tensor.squeeze().cpu().numpy().astype(np.uint8))
-        predicted_img.save(os.path.join(store_fdr_exp, 'pred', file_name))
-        soft_img.save(os.path.join(store_fdr_exp, 'soft', file_name))
-        label_img.save(os.path.join(store_fdr_exp, 'label', file_name))
-        combined_image.save(os.path.join(store_fdr_exp, 'blended', file_name))
+                heatmap_prediction = cv2.applyColorMap((255-diss_pred), cv2.COLORMAP_JET)
+                heatmap_pred_im = Image.fromarray(heatmap_prediction).resize((2048, 1024))
+                combined_image = Image.blend(img_og, heatmap_pred_im, alpha=.5)
+
+
+
+                flat_pred[i * w * h:i * w * h +
+                          w * h] = torch.flatten(soft_pred).detach().cpu().numpy()
+                flat_labels[i * w * h:i * w * h +
+                            w * h] = torch.flatten(label).detach().cpu().numpy()
+                '''
+                # Save results
+                predicted_tensor = predictions * 1
+                label_tensor = label * 1
+
+                file_name = os.path.basename(data_i['original_path'][0])
+                label_img = Image.fromarray(
+                    label_tensor.squeeze().cpu().numpy().astype(np.uint8))
+                soft_img = Image.fromarray(
+                    (soft_pred.squeeze().cpu().numpy() * 255).astype(np.uint8))
+                predicted_img = Image.fromarray(
+                    predicted_tensor.squeeze().cpu().numpy().astype(np.uint8))
+                predicted_img.save(os.path.join(store_fdr_exp, 'pred', file_name))
+                soft_img.save(os.path.join(store_fdr_exp, 'soft', file_name))
+                label_img.save(os.path.join(store_fdr_exp, 'label', file_name))
+                combined_image.save(os.path.join(store_fdr_exp, 'blended', file_name))
+                '''
        
         
 print('Calculating metric scores')
@@ -179,6 +188,7 @@ results = metrics.get_metrics(flat_labels, flat_pred)
 print("roc_auc_score : " + str(results['auroc']))
 print("mAP: " + str(results['AP']))
 print("FPR@95%TPR : " + str(results['FPR@95%TPR']))
+print("Inference Time: "  + str(inf_time)/(10*len(original_paths)) )
 
 if config['visualize']:
     plt.figure()
