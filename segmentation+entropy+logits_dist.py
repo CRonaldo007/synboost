@@ -280,9 +280,9 @@ weights = [1.0/32, 1.0/16, 1.0/8, 1.0/4, 1.0]
 vgg = VGG19().cuda(gpu)
 
 
-i=0
+
 with torch.no_grad():
-    for data_i in enumerate(tensors_list):
+    for i, data_i in enumerate(tensors_list):
         print('Generating image %i out of %i'%(i+1, len(tensors_list)))
         img_name = os.path.basename(data_i['original_path'])
         head_tail = os.path.split(img_name)
@@ -312,5 +312,4 @@ with torch.no_grad():
         combined = to_pil(combined.cpu())
         pred_name = 'mea_' + img_name
         combined.save(os.path.join(soft_fdr, pred_name))
-        i+=1
 
