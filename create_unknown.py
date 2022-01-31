@@ -9,12 +9,7 @@ sys.path.insert(0, './image_dissimilarity')
 from util import visualization
 import data.cityscapes_labels as cityscapes_labels
 
-import sys
-sys.path.insert(0, './image_synthesis')
-import data
-from models.pix2pix_model import Pix2PixModel
-from util.visualizer import Visualizer
-from util import html
+
 
 import os
 from PIL import Image
@@ -165,7 +160,12 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     print('Starting Image Synthesis Process')
 
     
-    
+    import sys
+    sys.path.insert(0, './image_synthesis')
+    import data
+    from models.pix2pix_model import Pix2PixModel
+    from util.visualizer import Visualizer
+    from util import html
     world_size = 1
     rank = 0
 
