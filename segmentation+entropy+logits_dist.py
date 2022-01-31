@@ -204,6 +204,9 @@ for index in range(len(original_paths)):
     syn_image_path = synthesis_paths[index]
     syn_image = Image.open(syn_image_path)
     
+    w = 512
+    h = round(512 / 2)
+    image_size = (h, w)
     common_transforms = [transforms.Resize(size=image_size, interpolation=Image.NEAREST),transforms.ToTensor()]
     base_transforms = transforms.Compose(common_transforms)
     
