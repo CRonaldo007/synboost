@@ -399,9 +399,9 @@ def create_known_examples(instance_path, semantic_path, original_path, save_dir)
 
 
 if __name__ == '__main__':
-    instance_path = '/kaggle/input/first-image'
-    semantic_path = '/kaggle/input/first-image'
-    original_path = '/kaggle/input/first-image'
+    instance_path = '/kaggle/input/unknown-dataset/unknown_dataset/instances'
+    semantic_path = '/kaggle/input/unknown-dataset/unknown_dataset/labels'
+    original_path = '/kaggle/input/synboostwo-data-generator/final_dataset/cityscapes_processed/original'
     save_dir = '/kaggle/working/results'
     
     create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False)
