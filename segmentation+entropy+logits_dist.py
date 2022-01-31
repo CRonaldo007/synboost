@@ -297,7 +297,8 @@ with torch.no_grad():
         img_name = head_tail[1]
         original = data_i['original'].cuda(gpu)
         synthesis = data_i['synthesis'].cuda(gpu)
-        print(synthesis.shape)
+        synthesis = synthesis[None, :]
+        print(synthesis)
         x_vgg, y_vgg = vgg(original), vgg(synthesis)
         feat5 = torch.mean(torch.abs(x_vgg[4] - y_vgg[4]), dim=1).unsqueeze(1)
         feat4 = torch.mean(torch.abs(x_vgg[3] - y_vgg[3]), dim=1).unsqueeze(1)
