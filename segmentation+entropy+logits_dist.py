@@ -202,8 +202,6 @@ tensors_list = []
 for index in range(len(original_paths)):
     image_path = original_paths[index]
     image = Image.open(image_path)
-
-    print(image_path)
     syn_image_path = synthesis_paths[index]
     syn_image = Image.open(syn_image_path)
     
@@ -286,7 +284,9 @@ i=0
 with torch.no_grad():
     for data_i in enumerate(tensors_list):
         print('Generating image %i out of %i'%(i+1, len(tensors_list)))
-        img_name = os.path.basename(data_i['original_path'][0])
+        img_name = os.path.basename(data_i['original_path'])
+        head_tail = os.path.split(img_name)
+        img_name = head_tail[1]
         original = data_i['original'].cuda(gpu)
         synthesis = data_i['synthesis'].cuda(gpu)
 
