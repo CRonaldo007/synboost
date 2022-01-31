@@ -193,15 +193,15 @@ original_paths = [os.path.join(data_dir, image)
                        for image in os.listdir(os.path.join(data_dir))]
 synthesis_paths = [os.path.join(synthesis_fdr, image)
                                     for image in os.listdir(os.path.join(synthesis_fdr))]
-original_paths = natsorted(self.original_paths)
-synthesis_paths = natsorted(self.synthesis_paths)
+original_paths = natsorted(original_paths)
+synthesis_paths = natsorted(synthesis_paths)
 
 tensors_list = []
 for index in range(len(original_paths)):
-    image_path = self.original_paths[index]
+    image_path = original_paths[index]
     image = Image.open(image_path)
 
-    syn_image_path = self.synthesis_paths[index]
+    syn_image_path = synthesis_paths[index]
     syn_image = Image.open(syn_image_path)
     
     common_transforms = [transforms.Resize(size=image_size, interpolation=Image.NEAREST),transforms.ToTensor()]
