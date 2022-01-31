@@ -168,7 +168,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     rank = 0
 
     # Corrects where dataset is in necesary format
-    opt.dataroot = os.path.join(save_dir, 'temp')
+    opt.dataroot = os.path.join(opt.results_dir, 'temp')
 
     opt.world_size = world_size
     opt.gpu = 0
@@ -215,7 +215,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
         shutil.move(os.path.join(source_fdr,image_name), os.path.join(synthesis_fdr,image_name))
 
     shutil.rmtree(os.path.join(opt.results_dir, 'image-synthesis'))
-    shutil.rmtree(os.path.join(save_dir, 'temp'))
+    shutil.rmtree(os.path.join(opt.results_dir, 'temp'))
 
     data_origin = 'spade'
     soft_fdr = os.path.join(opt.results_dir, 'mae_features_' + data_origin)
@@ -227,23 +227,31 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
                            for image in os.listdir(os.path.join(data_dir))]
     synthesis_paths = [os.path.join(synthesis_fdr, image)
                                         for image in os.listdir(os.path.join(synthesis_fdr))]
-    original_paths = natsorted(self.original_paths)
-    synthesis_paths = natsorted(self.synthesis_paths)
+    original_paths = natsorted(original_paths)
+    synthesis_paths = natsorted(synthesis_paths)
 
     tensors_list = []
+    def _flip(img, flip):
+        if flip:
+            return img.transpose(Image.FLIP_LEFT_RIGHT)
+        return img
     for index in range(len(original_paths)):
-        image_path = self.original_paths[index]
+        image_path = original_paths[index]
         image = Image.open(image_path)
-
-        syn_image_path = self.synthesis_paths[index]
+        syn_image_path = synthesis_paths[index]
         syn_image = Image.open(syn_image_path)
-
+        flip_ran = random.random() > 0.5
+        image = _flip(image, flip_ran)
+        syn_image = _flip(syn_image, flip_ran)
+        w = 512
+        h = round(512 / 2)
+        image_size = (h, w)
         common_transforms = [transforms.Resize(size=image_size, interpolation=Image.NEAREST),transforms.ToTensor()]
         base_transforms = transforms.Compose(common_transforms)
 
         syn_image_tensor = base_transforms(syn_image)
         image_tensor = base_transforms(image)
-
+        print(syn_image_tensor.shape)
         norm_transform = transforms.Compose([transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) #imageNet normamlization
         syn_image_tensor = norm_transform(syn_image_tensor)
         image_tensor = norm_transform(image_tensor)
@@ -262,7 +270,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     # activate GPUs
     gpu_ids = '0'
     gpu = int(gpu_ids)
-
+    print(gpu)
 
     class VGG19(torch.nn.Module):
         def __init__(self, requires_grad=False):
@@ -298,25 +306,29 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
             return out
 
     from  torch.nn.modules.upsampling import Upsample
-    up5 = Upsample(scale_factor=16, mode='bicubic')
-    up4 = Upsample(scale_factor=8, mode='bicubic')
-    up3 = Upsample(scale_factor=4, mode='bicubic')
-    up2 = Upsample(scale_factor=2, mode='bicubic')
-    up1 = Upsample(scale_factor=1, mode='bicubic')
+    up5 = Upsample(scale_factor=16, mode='bicubic', align_corners=True)
+    up4 = Upsample(scale_factor=8, mode='bicubic', align_corners=True)
+    up3 = Upsample(scale_factor=4, mode='bicubic', align_corners=True)
+    up2 = Upsample(scale_factor=2, mode='bicubic', align_corners=True)
+    up1 = Upsample(scale_factor=1, mode='bicubic', align_corners=True)
     to_pil = ToPILImage()
 
     # Going through visualization loader
     weights = [1.0/32, 1.0/16, 1.0/8, 1.0/4, 1.0]
     vgg = VGG19().cuda(gpu)
 
-    i=0
+
+
     with torch.no_grad():
-        for data_i in enumerate(tensors_list):
+        for i, data_i in enumerate(tensors_list):
             print('Generating image %i out of %i'%(i+1, len(tensors_list)))
-            img_name = os.path.basename(data_i['original_path'][0])
+            img_name = os.path.basename(data_i['original_path'])
+            head_tail = os.path.split(img_name)
+            img_name = head_tail[1]
             original = data_i['original'].cuda(gpu)
             synthesis = data_i['synthesis'].cuda(gpu)
-
+            synthesis = torch.unsqueeze(synthesis, 0)
+            original = torch.unsqueeze(original, 0)
             x_vgg, y_vgg = vgg(original), vgg(synthesis)
             feat5 = torch.mean(torch.abs(x_vgg[4] - y_vgg[4]), dim=1).unsqueeze(1)
             feat4 = torch.mean(torch.abs(x_vgg[3] - y_vgg[3]), dim=1).unsqueeze(1)
@@ -338,8 +350,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
 
             combined = to_pil(combined.cpu())
             pred_name = 'mea_' + img_name
-            combined.save(os.path.join(soft_fdr, pred_name))
-            i+=1     
+            combined.save(os.path.join(soft_fdr, pred_name))   
 
 def create_known_examples(instance_path, semantic_path, original_path, save_dir):
 
@@ -386,9 +397,9 @@ def create_known_examples(instance_path, semantic_path, original_path, save_dir)
 
 
 if __name__ == '__main__':
-    instance_path = '/kaggle/input/unknown/unknown/instances'
-    semantic_path = '/kaggle/input/unknown/unknown/semantic'
-    original_path = '/kaggle/input/unknown/unknown/original'
+    instance_path = '/kaggle/input/first-image'
+    semantic_path = '/kaggle/input/first-image'
+    original_path = '/kaggle/input/first-image'
     save_dir = '/kaggle/working/results'
     
     create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False)
