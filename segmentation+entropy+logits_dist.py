@@ -275,11 +275,11 @@ class VGG19(torch.nn.Module):
         return out
 
 from  torch.nn.modules.upsampling import Upsample
-up5 = Upsample(scale_factor=16, mode='bicubic')
-up4 = Upsample(scale_factor=8, mode='bicubic')
-up3 = Upsample(scale_factor=4, mode='bicubic')
-up2 = Upsample(scale_factor=2, mode='bicubic')
-up1 = Upsample(scale_factor=1, mode='bicubic')
+up5 = Upsample(scale_factor=16, mode='bicubic', align_corners=True)
+up4 = Upsample(scale_factor=8, mode='bicubic', align_corners=True)
+up3 = Upsample(scale_factor=4, mode='bicubic', align_corners=True)
+up2 = Upsample(scale_factor=2, mode='bicubic', align_corners=True)
+up1 = Upsample(scale_factor=1, mode='bicubic', align_corners=True)
 to_pil = ToPILImage()
 
 # Going through visualization loader
