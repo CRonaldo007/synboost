@@ -5,6 +5,7 @@ import cv2
 from collections import OrderedDict
 import shutil
 import torch
+import random
 from natsort import natsorted
 from torch.backends import cudnn
 import torchvision
@@ -199,12 +200,18 @@ original_paths = natsorted(original_paths)
 synthesis_paths = natsorted(synthesis_paths)
 
 tensors_list = []
+def _flip(img, flip):
+    if flip:
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+    return img
 for index in range(len(original_paths)):
     image_path = original_paths[index]
     image = Image.open(image_path)
     syn_image_path = synthesis_paths[index]
     syn_image = Image.open(syn_image_path)
-    
+    flip_ran = random.random() > 0.5
+    image = _flip(image, flip_ran)
+    syn_image = _flip(syn_image, flip_ran)
     w = 512
     h = round(512 / 2)
     image_size = (h, w)
