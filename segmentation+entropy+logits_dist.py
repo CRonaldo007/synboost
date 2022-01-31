@@ -203,6 +203,7 @@ for index in range(len(original_paths)):
     image_path = original_paths[index]
     image = Image.open(image_path)
 
+    print(image_path)
     syn_image_path = synthesis_paths[index]
     syn_image = Image.open(syn_image_path)
     
@@ -279,6 +280,7 @@ to_pil = ToPILImage()
 # Going through visualization loader
 weights = [1.0/32, 1.0/16, 1.0/8, 1.0/4, 1.0]
 vgg = VGG19().cuda(gpu)
+
 
 i=0
 with torch.no_grad():
