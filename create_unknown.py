@@ -4,6 +4,9 @@ from natsort import natsorted
 import numpy as np
 import random
 
+from options.test_options import TestOptions
+TestOptions = TestOptions()
+opt = TestOptions.parse()
 import sys
 sys.path.insert(0, './image_dissimilarity')
 from util import visualization
@@ -21,9 +24,7 @@ import torch
 from torch.backends import cudnn
 import torchvision.transforms as transforms
 
-from options.test_options import TestOptions
-TestOptions = TestOptions()
-opt = TestOptions.parse()
+
 
 trainid_to_name = cityscapes_labels.trainId2name
 id_to_trainid = cityscapes_labels.label2trainid
