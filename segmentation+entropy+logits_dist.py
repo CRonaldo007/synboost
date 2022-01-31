@@ -224,7 +224,6 @@ for index in range(len(original_paths)):
     norm_transform = transforms.Compose([transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) #imageNet normamlization
     syn_image_tensor = norm_transform(syn_image_tensor)
     image_tensor = norm_transform(image_tensor)
-    print(syn_image_tensor.shape)
     tensors_list.append({
                       'original': image_tensor,
                       
@@ -297,8 +296,8 @@ with torch.no_grad():
         img_name = head_tail[1]
         original = data_i['original'].cuda(gpu)
         synthesis = data_i['synthesis'].cuda(gpu)
-        synthesis = synthesis[None, :]
-        print(type(synthesis))
+        synthesis = torch.unsqueeze(synthesis, 0)
+        original = torch.unsqueeze(original, 0)
         x_vgg, y_vgg = vgg(original), vgg(synthesis)
         feat5 = torch.mean(torch.abs(x_vgg[4] - y_vgg[4]), dim=1).unsqueeze(1)
         feat4 = torch.mean(torch.abs(x_vgg[3] - y_vgg[3]), dim=1).unsqueeze(1)
