@@ -9,6 +9,27 @@ sys.path.insert(0, './image_dissimilarity')
 from util import visualization
 import data.cityscapes_labels as cityscapes_labels
 
+import sys
+sys.path.insert(0, './image_synthesis')
+import data
+from models.pix2pix_model import Pix2PixModel
+from util.visualizer import Visualizer
+from util import html
+
+import os
+from PIL import Image
+import numpy as np
+import cv2
+from collections import OrderedDict
+import shutil
+import torch
+from torch.backends import cudnn
+import torchvision.transforms as transforms
+
+from options.test_options import TestOptions
+TestOptions = TestOptions()
+opt = TestOptions.parse()
+
 trainid_to_name = cityscapes_labels.trainId2name
 id_to_trainid = cityscapes_labels.label2trainid
 #objects_to_change = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33] # equal_prob
@@ -143,26 +164,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
             instance_img.save(os.path.join(save_dir, 'temp', 'gtFine', 'val', os.path.basename(instance)))
     print('Starting Image Synthesis Process')
 
-    import sys
-    sys.path.insert(0, './image_synthesis')
-    import data
-    from models.pix2pix_model import Pix2PixModel
-    from util.visualizer import Visualizer
-    from util import html
     
-    import os
-    from PIL import Image
-    import numpy as np
-    import cv2
-    from collections import OrderedDict
-    import shutil
-    import torch
-    from torch.backends import cudnn
-    import torchvision.transforms as transforms
-
-    from options.test_options import TestOptions
-    TestOptions = TestOptions()
-    opt = TestOptions.parse()
     
     world_size = 1
     rank = 0
