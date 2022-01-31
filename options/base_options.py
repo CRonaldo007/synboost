@@ -22,7 +22,7 @@ class BaseOptions():
         parser.add_argument('--ngpus_per_node', type=int, default=8, help='num of gpus for each server')
         parser.add_argument('--name', type=str, default='image-synthesis', help='name of the folder where the model is saved')
 
-        parser.add_argument('--checkpoints_dir', type=str, default='models', help='models are saved here')
+        parser.add_argument('--checkpoints_dir', type=str, default='/kaggle/input/synthesis-original-path', help='models are saved here')
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
         parser.add_argument('--norm_G', type=str, default='spectralsync_batch', help='instance normalization or batch normalization')
         parser.add_argument('--norm_D', type=str, default='spectralinstance', help='instance normalization or batch normalization')
