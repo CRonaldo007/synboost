@@ -240,7 +240,7 @@ for index in range(len(original_paths)):
 # activate GPUs
 gpu_ids = '0'
 gpu = int(gpu_ids)
-
+print(gpu)
 
 class VGG19(torch.nn.Module):
     def __init__(self, requires_grad=False):
