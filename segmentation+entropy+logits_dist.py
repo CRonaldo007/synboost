@@ -298,7 +298,7 @@ with torch.no_grad():
         original = data_i['original'].cuda(gpu)
         synthesis = data_i['synthesis'].cuda(gpu)
         synthesis = synthesis[None, :]
-        print(synthesis)
+        print(type(synthesis))
         x_vgg, y_vgg = vgg(original), vgg(synthesis)
         feat5 = torch.mean(torch.abs(x_vgg[4] - y_vgg[4]), dim=1).unsqueeze(1)
         feat4 = torch.mean(torch.abs(x_vgg[3] - y_vgg[3]), dim=1).unsqueeze(1)
