@@ -12,7 +12,7 @@ from image_dissimilarity.util import visualization
 import image_dissimilarity.data.cityscapes_labels as cityscapes_labels
 
 
-
+import torchvision
 from torchvision.transforms import ToPILImage
 import cv2
 from collections import OrderedDict
