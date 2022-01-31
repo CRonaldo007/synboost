@@ -225,11 +225,8 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     if not os.path.exists(soft_fdr):
         os.makedirs(soft_fdr)
 
-    original_paths = [os.path.join(data_dir, image)
-                           for image in os.listdir(os.path.join(data_dir))]
     synthesis_paths = [os.path.join(synthesis_fdr, image)
                                         for image in os.listdir(os.path.join(synthesis_fdr))]
-    original_paths = natsorted(original_paths)
     synthesis_paths = natsorted(synthesis_paths)
 
     tensors_list = []
