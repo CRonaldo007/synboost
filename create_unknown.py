@@ -13,9 +13,7 @@ import image_dissimilarity.data.cityscapes_labels as cityscapes_labels
 
 
 
-import os
-from PIL import Image
-import numpy as np
+from torchvision.transforms import ToPILImage
 import cv2
 from collections import OrderedDict
 import shutil
@@ -250,7 +248,6 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
 
         syn_image_tensor = base_transforms(syn_image)
         image_tensor = base_transforms(image)
-        print(syn_image_tensor.shape)
         norm_transform = transforms.Compose([transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) #imageNet normamlization
         syn_image_tensor = norm_transform(syn_image_tensor)
         image_tensor = norm_transform(image_tensor)
@@ -269,7 +266,6 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     # activate GPUs
     gpu_ids = '0'
     gpu = int(gpu_ids)
-    print(gpu)
 
     class VGG19(torch.nn.Module):
         def __init__(self, requires_grad=False):
