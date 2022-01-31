@@ -213,10 +213,11 @@ for index in range(len(original_paths)):
     
     syn_image_tensor = base_transforms(syn_image)
     image_tensor = base_transforms(image)
-    
+    print(syn_image_tensor.shape)
     norm_transform = transforms.Compose([transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) #imageNet normamlization
     syn_image_tensor = norm_transform(syn_image_tensor)
     image_tensor = norm_transform(image_tensor)
+    print(syn_image_tensor.shape)
     tensors_list.append({
                       'original': image_tensor,
                       
