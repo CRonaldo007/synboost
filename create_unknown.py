@@ -8,9 +8,8 @@ from options.test_options import TestOptions
 TestOptions = TestOptions()
 opt = TestOptions.parse()
 import sys
-sys.path.insert(0, './image_dissimilarity')
-from util import visualization
-import data.cityscapes_labels as cityscapes_labels
+from image_dissimilarity.util import visualization
+import image_dissimilarity.data.cityscapes_labels as cityscapes_labels
 
 
 
