@@ -7,6 +7,7 @@ import shutil
 import torch
 from natsort import natsorted
 from torch.backends import cudnn
+import torchvision
 import torchvision.transforms as transforms
 from torchvision.transforms import ToPILImage
 
