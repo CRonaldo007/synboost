@@ -160,7 +160,7 @@ def create_unknown_examples(instance_path, semantic_path, original_path, save_di
     from torch.backends import cudnn
     import torchvision.transforms as transforms
 
-    from options.test_options import 
+    from options.test_options import TestOptions
     TestOptions = TestOptions()
     opt = TestOptions.parse()
     
