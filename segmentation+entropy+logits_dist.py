@@ -8,6 +8,7 @@ import torch
 from natsort import natsorted
 from torch.backends import cudnn
 import torchvision.transforms as transforms
+from torchvision.transforms import ToPILImage
 
 from options.test_options import TestOptions
 import sys
