@@ -397,5 +397,5 @@ if __name__ == '__main__':
     original_path = '/kaggle/input/original'
     save_dir = '/kaggle/working/results'
     
-    create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False)
-    #create_known_examples(instance_path, semantic_path, original_path, save_dir)
+    #create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False)
+    create_known_examples(instance_path, semantic_path, original_path, save_dir)
