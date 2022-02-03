@@ -7,10 +7,10 @@ class TestOptions(BaseOptions):
         parser.add_argument('--results_dir', type=str, default='/kaggle/working/results/', help='saves results here.')
         parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
         parser.add_argument('--how_many', type=int, default=float("inf"), help='how many test images to run')
-        parser.add_argument('--instances_og', type=str, default='/kaggle/working/instances', help='path to folder containing ground truth instances')
-        parser.add_argument('--semantic_og', type=str, default='/kaggle/working/semantic', help='path to folder containing ground truth semantic maps')
+        parser.add_argument('--instances_og', type=str, default='/kaggle/input/instance', help='path to folder containing ground truth instances')
+        parser.add_argument('--semantic_og', type=str, default='/kaggle/input/semantic', help='path to folder containing ground truth semantic maps')
         # General
-        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/first-image', help='path to the folder containing demo images/ original images',
+        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/original', help='path to the folder containing demo images/ original images',
                             required=False)
         parser.add_argument('--no-segmentation', action='store_true', help='if specified, do *not* segment images since they are already created')
 
